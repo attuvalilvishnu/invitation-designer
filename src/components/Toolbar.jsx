@@ -15,8 +15,6 @@ export default function Toolbar({
   setNumPages,
   exportMode,
   setExportMode,
-  canvasHeight,
-  setCanvasHeight,
   canvasBg,
   setCanvasBg,
   setBgImage,
@@ -25,7 +23,11 @@ export default function Toolbar({
   bgWidth,
   setBgWidth,
   canvasRef,
-  setIsPreviewMode
+  setIsPreviewMode,
+  undo,
+  redo,
+  canUndo,
+  canRedo
 }) {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -107,6 +109,11 @@ export default function Toolbar({
     <aside id="toolbar">
       <h2>Designer</h2>
 
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <button onClick={undo} disabled={!canUndo} style={{ flex: 1, padding: '8px', opacity: canUndo ? 1 : 0.5 }}>↩ Undo</button>
+        <button onClick={redo} disabled={!canRedo} style={{ flex: 1, padding: '8px', opacity: canRedo ? 1 : 0.5 }}>Redo ↪</button>
+      </div>
+
       <div className="tool-section">
         <h3>Project Type</h3>
         <select value={exportMode} onChange={e => setExportMode(e.target.value)} style={{ width: '100%', marginBottom: '10px' }}>
@@ -122,17 +129,7 @@ export default function Toolbar({
               <button style={{ flex: 1, padding: '5px', background: '#8a2be2', color: 'white', borderColor: '#8a2be2' }} onClick={() => setNumPages(numPages + 1)}>+ Add Page</button>
             </div>
           </>
-        ) : (
-          <>
-            <label>Website Height (px):</label>
-            <input
-              type="number"
-              value={canvasHeight}
-              onChange={e => setCanvasHeight(Number(e.target.value))}
-              style={{ width: '100%', marginBottom: '5px', marginTop: '5px' }}
-            />
-          </>
-        )}
+        ) : null}
       </div>
 
       <div className="tool-section">

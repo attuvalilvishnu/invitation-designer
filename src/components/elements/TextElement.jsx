@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import ResizeHandle from './ResizeHandle';
 
-export default function TextElement({ element, isSelected, baseStyle, handleMouseDown, updateContent, onResize }) {
+export default function TextElement({ element, isSelected, baseStyle, handleMouseDown, updateContent, onResize, onInteractStart, onInteractEnd }) {
   const contentRef = useRef(element.content);
   const spanRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -87,7 +87,7 @@ export default function TextElement({ element, isSelected, baseStyle, handleMous
       >
         {element.content}
       </span>
-      {isSelected && <ResizeHandle id={element.id} width={element.width || 150} height={element.height || 40} onResize={onResize} />}
+      {isSelected && <ResizeHandle id={element.id} width={element.width || 150} height={element.height || 40} onResize={onResize} onInteractStart={onInteractStart} onInteractEnd={onInteractEnd} />}
     </div>
   );
 }

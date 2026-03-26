@@ -7,16 +7,49 @@ import { STARTER_TEMPLATE, DEFAULT_BG } from './utils/templateUtils';
 
 export default function App() {
   const [elements, setElements] = useState(STARTER_TEMPLATE);
+  const [past, setPast] = useState([]);
+  const [future, setFuture] = useState([]);
+  const dragInitialState = useRef(null);
+
   const [selectedId, setSelectedId] = useState(null);
   const [numPages, setNumPages] = useState(5);
   const [exportMode, setExportMode] = useState('html');
-  const [canvasHeight, setCanvasHeight] = useState(3500);
   const [canvasBg, setCanvasBg] = useState('#ffffff');
   const [bgImage, setBgImage] = useState(DEFAULT_BG);
   const [bgFit, setBgFit] = useState('cover');
   const [bgWidth, setBgWidth] = useState('full');
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const canvasRef = useRef(null);
+
+  const canvasHeight = elements.filter(el => !el.parentId).reduce((max, el) => Math.max(max, el.y + (el.height || 0)), 0) + 100;
+
+  const undo = () => {
+    if (past.length === 0) return;
+    const previous = past[past.length - 1];
+    setPast(past.slice(0, -1));
+    setFuture([elements, ...future]);
+    setElements(previous);
+  };
+
+  const redo = () => {
+    if (future.length === 0) return;
+    const next = future[0];
+    setFuture(future.slice(1));
+    setPast([...past, elements]);
+    setElements(next);
+  };
+
+  const handleInteractStart = () => {
+    dragInitialState.current = elements;
+  };
+
+  const handleInteractEnd = () => {
+    if (dragInitialState.current && dragInitialState.current !== elements) {
+      setPast(prev => [...prev, dragInitialState.current]);
+      setFuture([]);
+      dragInitialState.current = null;
+    }
+  };
 
   const selectedElement = elements.find(el => el.id === selectedId);
 
@@ -29,6 +62,8 @@ export default function App() {
           e.target.tagName !== 'TEXTAREA' &&
           !e.target.isContentEditable
         ) {
+          setPast(prev => [...prev, elements]);
+          setFuture([]);
           // Recursive delete: remove element and any children
           const getChildrenIds = (id) => elements.filter(el => el.parentId === id).map(el => el.id);
           let toDelete = [selectedId];
@@ -71,6 +106,8 @@ export default function App() {
       newEl = { ...newEl, imageUrl: customImageUrl || 'https://images.unsplash.com/photo-1542614471-001ccf2b449c?auto=format&fit=crop&q=80&w=200', width: 150, height: 150 };
     }
 
+    setPast(prev => [...prev, elements]);
+    setFuture([]);
     setElements([...elements, newEl]);
     setSelectedId(newEl.id);
   };
@@ -85,10 +122,14 @@ export default function App() {
 
   const updateSelected = (key, value) => {
     if (!selectedId) return;
+    setPast(prev => [...prev, elements]);
+    setFuture([]);
     setElements(els => els.map(el => el.id === selectedId ? { ...el, [key]: value } : el));
   };
 
   const updateContent = (id, content) => {
+    setPast(prev => [...prev, elements]);
+    setFuture([]);
     if (content.trim() === '') {
       setElements(els => els.filter(el => el.id !== id));
       if (selectedId === id) setSelectedId(null);
@@ -99,6 +140,8 @@ export default function App() {
 
   const deleteSelected = () => {
     if (!selectedId) return;
+    setPast(prev => [...prev, elements]);
+    setFuture([]);
     const getChildrenIds = (id) => elements.filter(el => el.parentId === id).map(el => el.id);
     let toDelete = [selectedId];
     let queue = [selectedId];
@@ -114,6 +157,8 @@ export default function App() {
 
   const clearCanvas = () => {
     if (window.confirm("Are you sure you want to clear the entire canvas? This cannot be undone.")) {
+      setPast(prev => [...prev, elements]);
+      setFuture([]);
       setElements([]);
       setSelectedId(null);
     }
@@ -132,11 +177,14 @@ export default function App() {
           key={el.id}
           element={el}
           isSelected={selectedId === el.id}
-          onSelect={setSelectedId}
-          onDrag={handleDrag}
-          onResize={handleResize}
+          onSelect={isPreviewMode ? () => {} : setSelectedId}
+          onDrag={isPreviewMode ? () => {} : handleDrag}
+          onResize={isPreviewMode ? () => {} : handleResize}
+          onInteractStart={handleInteractStart}
+          onInteractEnd={handleInteractEnd}
           updateContent={updateContent}
           renderChildren={renderChildren}
+          isPreviewMode={isPreviewMode}
         />
       ));
   };
@@ -157,8 +205,6 @@ export default function App() {
           setNumPages={setNumPages}
           exportMode={exportMode}
           setExportMode={setExportMode}
-          canvasHeight={canvasHeight}
-          setCanvasHeight={setCanvasHeight}
           canvasBg={canvasBg}
           setCanvasBg={setCanvasBg}
           setBgImage={setBgImage}
@@ -168,6 +214,10 @@ export default function App() {
           setBgWidth={setBgWidth}
           canvasRef={canvasRef}
           setIsPreviewMode={setIsPreviewMode}
+          undo={undo}
+          redo={redo}
+          canUndo={past.length > 0}
+          canRedo={future.length > 0}
         />
       )}
 

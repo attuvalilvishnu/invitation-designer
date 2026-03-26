@@ -1,7 +1,7 @@
 import React from 'react';
 import ResizeHandle from './ResizeHandle';
 
-export default function ImageElement({ element, isSelected, baseStyle, handleMouseDown, onResize }) {
+export default function ImageElement({ element, isSelected, baseStyle, handleMouseDown, onResize, onInteractStart, onInteractEnd }) {
   return (
     <div
       className={`canvas-element ${isSelected ? 'selected' : ''}`}
@@ -20,7 +20,7 @@ export default function ImageElement({ element, isSelected, baseStyle, handleMou
         draggable="false" 
         alt="Canvas Element"
       />
-      {isSelected && <ResizeHandle id={element.id} width={element.width} height={element.height} onResize={onResize} />}
+      {isSelected && <ResizeHandle id={element.id} width={element.width} height={element.height} onResize={onResize} onInteractStart={onInteractStart} onInteractEnd={onInteractEnd} />}
     </div>
   );
 }

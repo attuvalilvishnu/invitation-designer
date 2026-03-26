@@ -1,16 +1,22 @@
 import React from 'react';
 
-export default function ResizeHandle({ id, width, height, onResize, lockWidth = false }) {
+export default function ResizeHandle({ id, width, height, onResize, lockWidth = false, onInteractStart, onInteractEnd }) {
   const handlePointerDown = (e) => {
     e.stopPropagation();
     let startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
     let startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
     let startW = width;
     let startH = height;
+    let hasStartedInteraction = false;
 
     const onPointerMove = (moveEvent) => {
       if (moveEvent.cancelable && moveEvent.type.includes('touch')) {
         moveEvent.preventDefault();
+      }
+
+      if (!hasStartedInteraction) {
+        hasStartedInteraction = true;
+        if (onInteractStart) onInteractStart();
       }
 
       const clientX = moveEvent.type.includes('touch') ? moveEvent.touches[0].clientX : moveEvent.clientX;
@@ -28,6 +34,7 @@ export default function ResizeHandle({ id, width, height, onResize, lockWidth = 
     };
 
     const onPointerUp = () => {
+      if (hasStartedInteraction && onInteractEnd) onInteractEnd();
       document.removeEventListener('mousemove', onPointerMove);
       document.removeEventListener('mouseup', onPointerUp);
       document.removeEventListener('touchmove', onPointerMove);

@@ -40,7 +40,7 @@ export default function Canvas({
       onMouseDown={() => setSelectedId(null)}
       style={bgWidth === 'full' ? bgStyle : { backgroundColor: '#f4f6f9' }}
     >
-      <div id="canvas-container" style={{ height: `${finalHeight}px` }}>
+      <div id="canvas-container" style={{ height: `${finalHeight}px`, '--canvas-height': `${finalHeight}px` }}>
         <div 
           id="canvas" 
           ref={canvasRef} 

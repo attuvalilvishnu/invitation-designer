@@ -148,7 +148,7 @@ select {
   justify-content: center;
   align-items: flex-start;
   overflow: auto;
-  padding: 40px;
+  padding: 0;
   background: repeating-linear-gradient(45deg, #e5e5f7 25%, transparent 25%, transparent 75%, #e5e5f7 75%, #e5e5f7), repeating-linear-gradient(45deg, #e5e5f7 25%, #f4f6f9 25%, #f4f6f9 75%, #e5e5f7 75%, #e5e5f7);
   background-position: 0 0, 10px 10px;
   background-size: 20px 20px;
@@ -167,7 +167,7 @@ select {
   position: relative;
   overflow: hidden;
   border-radius: 4px;
-  transform-origin: center;
+  transform-origin: top center;
 }
 
 .canvas-element {
@@ -214,6 +214,7 @@ select {
   justify-content: center;
   text-align: center;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  cursor: default;
 }
 .canvas-element.glass.selected {
   outline: 2px dashed rgba(212, 175, 55, 0.8);
@@ -239,11 +240,17 @@ img.canvas-element {
   
   #workspace {
     height: 55vh;
-    padding: 20px;
+    padding: 0;
+  }
+  
+  #canvas-container {
+    height: calc(var(--canvas-height) * 0.6) !important;
+    width: 300px;
   }
   
   #canvas {
     transform: scale(0.6);
+    transform-origin: top left;
   }
 }
 

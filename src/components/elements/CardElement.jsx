@@ -1,7 +1,7 @@
 import React from 'react';
 import ResizeHandle from './ResizeHandle';
 
-export default function CardElement({ element, isSelected, baseStyle, handleMouseDown, renderChildren, onResize }) {
+export default function CardElement({ element, isSelected, baseStyle, handleMouseDown, renderChildren, onResize, onInteractStart, onInteractEnd }) {
   return (
     <div
       className={`canvas-element ${element.isGlass ? 'glass' : ''} ${isSelected ? 'selected' : ''}`}
@@ -21,7 +21,7 @@ export default function CardElement({ element, isSelected, baseStyle, handleMous
       data-type="card"
     >
       {renderChildren(element.id)}
-      {isSelected && <ResizeHandle id={element.id} width={element.width} height={element.height} onResize={onResize} lockWidth={true} />}
+      {isSelected && <ResizeHandle id={element.id} width={element.width} height={element.height} onResize={onResize} lockWidth={true} onInteractStart={onInteractStart} onInteractEnd={onInteractEnd} />}
     </div>
   );
 }
