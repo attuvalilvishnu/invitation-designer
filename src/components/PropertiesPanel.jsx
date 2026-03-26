@@ -53,11 +53,34 @@ export default function PropertiesPanel({ selectedElement, updateSelected, delet
         <>
           <label>Background Color</label>
           <input type="color" value={selectedElement.bgColor || '#ffffff'} onChange={e => updateSelected('bgColor', e.target.value)} style={{ width: '100%', marginBottom: '10px' }} />
+
+          <label>Background Image</label>
+          <label className="upload-btn" style={{ display: 'block', marginBottom: '5px', fontSize: '12px', padding: '6px', textAlign: 'center', cursor: 'pointer', background: '#f0f0f0', border: '1px border #ccc', borderRadius: '4px' }}>
+            Upload Custom Image
+            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = (ev) => updateSelected('bgImage', ev.target.result);
+              reader.readAsDataURL(file);
+              e.target.value = '';
+            }} />
+          </label>
+          {selectedElement.bgImage && selectedElement.bgImage !== 'none' && (
+            <button style={{ width: '100%', fontSize: '11px', padding: '6px', marginBottom: '10px', background: '#555', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }} onClick={() => updateSelected('bgImage', 'none')}>Clear Custom Image</button>
+          )}
+          <div style={{ marginBottom: '10px' }}></div>
+
+          <label>Card Darken (Overlay): {Math.round((typeof selectedElement.bgOverlay === 'undefined' ? 0 : selectedElement.bgOverlay) * 100)}%</label>
+          <input type="range" min="0" max="100" value={(typeof selectedElement.bgOverlay === 'undefined' ? 0 : selectedElement.bgOverlay) * 100} onChange={e => updateSelected('bgOverlay', Number(e.target.value) / 100)} style={{ width: '100%', marginBottom: '10px' }} />
           
           <label>Card Opacity: {Math.round((typeof selectedElement.opacity === 'undefined' ? 1 : selectedElement.opacity) * 100)}%</label>
           <input type="range" min="0" max="100" value={(typeof selectedElement.opacity === 'undefined' ? 1 : selectedElement.opacity) * 100} onChange={e => updateSelected('opacity', Number(e.target.value) / 100)} style={{ width: '100%', marginBottom: '10px' }} />
 
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
+          <label>Roundness (Border Radius)</label>
+          <input type="range" min="0" max="250" value={typeof selectedElement.borderRadius === 'undefined' ? 0 : selectedElement.borderRadius} onChange={e => updateSelected('borderRadius', Number(e.target.value))} style={{ width: '100%', marginBottom: '10px' }} />
+
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '5px' }}>
             <input type="checkbox" checked={selectedElement.isGlass} onChange={e => updateSelected('isGlass', e.target.checked)} />
             Glassmorphism Effect
           </label>

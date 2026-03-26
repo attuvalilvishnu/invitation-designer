@@ -10,8 +10,11 @@ export default function CardElement({ element, isSelected, baseStyle, handleMous
         width: `${element.width}px`,
         height: `${element.height}px`,
         opacity: typeof element.opacity !== 'undefined' ? element.opacity : 1,
+        borderRadius: `${typeof element.borderRadius === 'undefined' ? 0 : element.borderRadius}px`,
         backgroundColor: element.isGlass ? element.bgColor : (element.bgColor || 'transparent'),
-        backgroundImage: element.bgImage && element.bgImage !== 'none' ? `url(${element.bgImage})` : 'none',
+        backgroundImage: element.bgImage && element.bgImage !== 'none' 
+          ? `linear-gradient(rgba(0,0,0,${typeof element.bgOverlay === 'undefined' ? 0 : element.bgOverlay}), rgba(0,0,0,${typeof element.bgOverlay === 'undefined' ? 0 : element.bgOverlay})), url(${element.bgImage})` 
+          : `linear-gradient(rgba(0,0,0,${typeof element.bgOverlay === 'undefined' ? 0 : element.bgOverlay}), rgba(0,0,0,${typeof element.bgOverlay === 'undefined' ? 0 : element.bgOverlay}))`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         padding: 0,
