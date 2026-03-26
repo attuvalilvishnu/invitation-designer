@@ -17,6 +17,7 @@ export default function Toolbar({
   setExportMode,
   canvasBg,
   setCanvasBg,
+  bgImage,
   setBgImage,
   bgFit,
   setBgFit,
@@ -24,6 +25,14 @@ export default function Toolbar({
   setBgWidth,
   canvasRef,
   setIsPreviewMode,
+  canvasOpacity,
+  setCanvasOpacity,
+  canvasBorderRadius,
+  setCanvasBorderRadius,
+  canvasBgOverlay,
+  setCanvasBgOverlay,
+  canvasIsGlass,
+  setCanvasIsGlass,
   undo,
   redo,
   canUndo,
@@ -166,7 +175,9 @@ export default function Toolbar({
           {selectedElement?.type === 'card' ? 'Adding to selected Card' : 'Adding to Root Canvas'}
         </p>
         <button id="btn-add-text" onClick={() => addElement('text')}>Add Text</button>
-        <button id="btn-add-card" onClick={() => addElement('card')}>Add Container Card</button>
+        {exportMode === 'html' && (
+          <button id="btn-add-card" onClick={() => addElement('card')}>Add Container Card</button>
+        )}
         <button id="btn-add-image" onClick={handleAddImageByUrl}>Add Image by URL</button>
         <label className="upload-btn" style={{ display: 'block', marginTop: '10px' }}>
           Upload Image
@@ -175,37 +186,6 @@ export default function Toolbar({
       </div>
 
       <div className="tool-section">
-        <h3>Canvas Settings</h3>
-        <label>Background Color</label>
-        <input
-          type="color"
-          value={canvasBg}
-          onChange={e => { setCanvasBg(e.target.value); setBgImage('none'); }}
-        />
-
-        <label>Background Image</label>
-        <input
-          type="file"
-          accept="image/*"
-          style={{ fontFamily: 'var(--font-ui)', fontSize: '13px' }}
-          onChange={handleBgImageUpload}
-        />
-
-        <label style={{ marginTop: '10px' }}>Image Fit</label>
-        <select value={bgFit} onChange={e => setBgFit(e.target.value)} style={{ width: '100%', marginBottom: '10px' }}>
-          <option value="cover">Fill Screen (Cover)</option>
-          <option value="contain">Show Full Image (Contain)</option>
-          <option value="100% auto">Fit Width (100% Width)</option>
-          <option value="auto 100%">Fit Height (100% Height)</option>
-        </select>
-
-        <label style={{ marginTop: '10px' }}>Background Area</label>
-        <select value={bgWidth} onChange={e => setBgWidth(e.target.value)} style={{ width: '100%', marginBottom: '10px' }}>
-          <option value="full">Full Screen (Viewport)</option>
-          <option value="canvas">Canvas Only (500px Wide)</option>
-        </select>
-
-        <hr style={{ margin: '15px 0', border: 'none', borderTop: '1px solid #e2e8f0' }} />
         <button id="btn-clear" style={{ background: '#ff4d4f', color: '#fff', borderColor: '#ff4d4f', width: '100%' }} onClick={clearCanvas}>Clear Canvas</button>
         <button id="btn-reset-template" style={{ background: '#555', color: '#fff', borderColor: '#555', width: '100%', marginTop: '10px' }} onClick={loadStarterTemplate}>Load Starter Template</button>
 

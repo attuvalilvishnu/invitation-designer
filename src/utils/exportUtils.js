@@ -1,5 +1,5 @@
-export const generateId = () => Math.random().toString(36).substr(2, 9);
 import html2canvas from 'html2canvas';
+export const generateId = () => Math.random().toString(36).substr(2, 9);
 
 export const exportHTML = (canvasRef) => {
   if (!canvasRef.current) return;

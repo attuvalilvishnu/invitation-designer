@@ -12,7 +12,11 @@ export default function Canvas({
   exportMode,
   canvasHeight,
   bgFit,
-  bgWidth
+  bgWidth,
+  canvasOpacity,
+  canvasBorderRadius,
+  canvasBgOverlay,
+  canvasIsGlass
 }) {
   const finalHeight = exportMode === 'png' ? numPages * 700 : canvasHeight;
   
@@ -25,9 +29,13 @@ export default function Canvas({
     }
   }
 
+  const enhancedBgImage = bgImage && bgImage !== 'none' 
+    ? `linear-gradient(rgba(0,0,0,${canvasBgOverlay}), rgba(0,0,0,${canvasBgOverlay})), url(${bgImage})` 
+    : `linear-gradient(rgba(0,0,0,${canvasBgOverlay}), rgba(0,0,0,${canvasBgOverlay}))`;
+
   const bgStyle = {
     backgroundColor: canvasBg,
-    backgroundImage: bgImage && bgImage !== 'none' ? `url(${bgImage})` : 'none',
+    backgroundImage: enhancedBgImage,
     backgroundAttachment: 'fixed',
     backgroundSize: bgFit,
     backgroundPosition: 'center',
@@ -37,20 +45,49 @@ export default function Canvas({
   return (
     <main 
       id="workspace" 
-      onMouseDown={() => setSelectedId(null)}
-      style={bgWidth === 'full' ? bgStyle : { backgroundColor: '#f4f6f9' }}
+      onMouseDown={() => setSelectedId('canvas')}
+      style={{
+        ...(exportMode === 'png' 
+          ? { backgroundColor: '#e0e0e0', padding: 0, overflow: 'hidden', position: 'relative' }
+          : (bgWidth === 'full' ? bgStyle : { backgroundColor: '#f4f6f9' })
+        )
+      }}
     >
-      <div id="canvas-container" style={{ height: `${finalHeight}px`, '--canvas-height': `${finalHeight}px` }}>
+      <div 
+        id="canvas-container" 
+        className={exportMode === 'png' ? 'container-fullwidth' : ''}
+        style={{ 
+          height: exportMode === 'png' ? '100%' : `${finalHeight}px`, 
+          '--canvas-height': `${finalHeight}px` 
+        }}
+      >
         <div 
           id="canvas" 
-          ref={canvasRef} 
+          ref={canvasRef}
+          className={exportMode === 'png' ? 'canvas-fullwidth' : ''}
           style={{ 
-            height: `${finalHeight}px`,
-            ...(bgWidth === 'canvas' ? bgStyle : { backgroundColor: 'transparent' })
+            height: exportMode === 'png' ? '100%' : `${finalHeight}px`,
+            ...(bgWidth === 'canvas' || exportMode === 'png' ? bgStyle : { backgroundColor: 'transparent' }),
+            opacity: canvasOpacity,
+            borderRadius: `${canvasBorderRadius}px`,
+            backdropFilter: canvasIsGlass ? 'blur(12px)' : 'none',
+            WebkitBackdropFilter: canvasIsGlass ? 'blur(12px)' : 'none',
+            border: canvasIsGlass ? '1px solid rgba(255, 255, 255, 0.15)' : 'none'
           }}
         >
           {dividers}
-          {renderChildren(null)}
+          {exportMode === 'png' ? (
+            <div style={{ 
+              width: '500px', 
+              height: '100%', 
+              position: 'relative', 
+              margin: '0 auto' 
+            }}>
+              {renderChildren(null)}
+            </div>
+          ) : (
+            renderChildren(null)
+          )}
         </div>
       </div>
     </main>

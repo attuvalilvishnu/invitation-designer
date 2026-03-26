@@ -11,15 +11,22 @@ export default function App() {
   const [future, setFuture] = useState([]);
   const dragInitialState = useRef(null);
   const historyTimeoutRef = useRef(null);
+  const isFirstRender = useRef(true);
 
   const [selectedId, setSelectedId] = useState(null);
   const [numPages, setNumPages] = useState(1);
-  const [exportMode, setExportMode] = useState('html');
-  const [canvasBg, setCanvasBg] = useState('#ffffff');
-  const [bgImage, setBgImage] = useState(DEFAULT_BG);
+  const [exportMode, setExportMode] = useState('png');
+  const [canvasBg, setCanvasBg] = useState('#762c14');
+  const [bgImage, setBgImage] = useState('none');
   const [bgFit, setBgFit] = useState('cover');
   const [bgWidth, setBgWidth] = useState('full');
   const [isPreviewMode, setIsPreviewMode] = useState(false);
+  
+  const [canvasOpacity, setCanvasOpacity] = useState(1);
+  const [canvasBorderRadius, setCanvasBorderRadius] = useState(0);
+  const [canvasBgOverlay, setCanvasBgOverlay] = useState(0);
+  const [canvasIsGlass, setCanvasIsGlass] = useState(false);
+  
   const canvasRef = useRef(null);
 
   const safeElements = Array.isArray(elements) ? elements : [];
@@ -56,7 +63,16 @@ export default function App() {
     }
   };
 
-  const selectedElement = safeElements.find(el => el.id === selectedId);
+  const selectedElement = selectedId === 'canvas' ? {
+    id: 'canvas',
+    type: 'canvas',
+    bgColor: canvasBg,
+    bgImage: bgImage,
+    bgOverlay: canvasBgOverlay,
+    opacity: canvasOpacity,
+    borderRadius: canvasBorderRadius,
+    isGlass: canvasIsGlass
+  } : safeElements.find(el => el.id === selectedId);
 
   useEffect(() => {
     // Migration: Strip hardcoded 500px width from text elements to prevent bounding box collisions natively
@@ -70,7 +86,17 @@ export default function App() {
       return el;
     }));
   }, []);
-
+  useEffect(() => {
+    if (exportMode === 'png') {
+      setBgImage('none');
+      setCanvasBg('#762c14');
+      setCanvasIsGlass(false);
+    } else {
+      // Restore HTML mode defaults
+      setBgImage(DEFAULT_BG);
+      setCanvasBg('#ffffff');
+    }
+  }, [exportMode]);
   useEffect(() => {
     const handleKeyDown = (e) => {
       // Don't intercept backspace inside inputs or contenteditable
@@ -195,6 +221,18 @@ export default function App() {
   const updateSelected = (key, value) => {
     if (!selectedId) return;
 
+    if (selectedId === 'canvas') {
+      if (key === 'bgColor') { setCanvasBg(value); setBgImage('none'); }
+      if (key === 'bgImage') setBgImage(value);
+      if (key === 'bgOverlay') setCanvasBgOverlay(value);
+      if (key === 'opacity') setCanvasOpacity(value);
+      if (key === 'borderRadius') setCanvasBorderRadius(value);
+      if (key === 'isGlass') setCanvasIsGlass(value);
+      if (key === 'bgFit') setBgFit(value);
+      if (key === 'bgWidth') setBgWidth(value);
+      return;
+    }
+
     if (!historyTimeoutRef.current) {
       setPast(prev => {
         if (prev.length > 0 && prev[prev.length - 1] === elements) return prev;
@@ -254,6 +292,41 @@ export default function App() {
 
   // Recursive render logic
   const renderChildren = (parentId) => {
+    if (exportMode === 'png') {
+      // In PNG mode: skip cards, render their children at absolute positions
+      if (parentId === null) {
+        // Render root non-card elements directly
+        const rootElements = safeElements.filter(el => !el.parentId && el.type !== 'card');
+        // Also render children of cards as if they are root elements with offset positions
+        const cardChildren = safeElements.filter(el => {
+          if (!el.parentId) return false;
+          const parent = safeElements.find(p => p.id === el.parentId);
+          return parent && parent.type === 'card';
+        }).map(el => {
+          const parent = safeElements.find(p => p.id === el.parentId);
+          return { ...el, x: el.x + (parent?.x || 0), y: el.y + (parent?.y || 0), _flatParentId: el.parentId };
+        });
+        return [...rootElements, ...cardChildren].map(el => (
+          <DraggableElement
+            key={el.id}
+            element={el}
+            isSelected={!isPreviewMode && selectedId === el.id}
+            isParentOfSelected={false}
+            onSelect={isPreviewMode ? () => { } : setSelectedId}
+            onDrag={isPreviewMode ? () => { } : handleDrag}
+            onResize={isPreviewMode ? () => { } : handleResize}
+            onInteractStart={handleInteractStart}
+            onInteractEnd={handleInteractEnd}
+            updateContent={updateContent}
+            renderChildren={() => []}
+            isPreviewMode={isPreviewMode}
+          />
+        ));
+      }
+      return [];
+    }
+
+    // HTML mode: normal recursive rendering
     return safeElements
       .filter(el => el.parentId === parentId)
       .map(el => (
@@ -292,6 +365,7 @@ export default function App() {
           setExportMode={setExportMode}
           canvasBg={canvasBg}
           setCanvasBg={setCanvasBg}
+          bgImage={bgImage}
           setBgImage={setBgImage}
           bgFit={bgFit}
           setBgFit={setBgFit}
@@ -299,6 +373,14 @@ export default function App() {
           setBgWidth={setBgWidth}
           canvasRef={canvasRef}
           setIsPreviewMode={setIsPreviewMode}
+          canvasOpacity={canvasOpacity}
+          setCanvasOpacity={setCanvasOpacity}
+          canvasBorderRadius={canvasBorderRadius}
+          setCanvasBorderRadius={setCanvasBorderRadius}
+          canvasBgOverlay={canvasBgOverlay}
+          setCanvasBgOverlay={setCanvasBgOverlay}
+          canvasIsGlass={canvasIsGlass}
+          setCanvasIsGlass={setCanvasIsGlass}
           undo={undo}
           redo={redo}
           canUndo={past.length > 0}
@@ -321,6 +403,10 @@ export default function App() {
         bgImage={bgImage}
         bgFit={bgFit}
         bgWidth={bgWidth}
+        canvasOpacity={canvasOpacity}
+        canvasBorderRadius={canvasBorderRadius}
+        canvasBgOverlay={canvasBgOverlay}
+        canvasIsGlass={canvasIsGlass}
         selectedId={selectedId}
         setSelectedId={setSelectedId}
         renderChildren={renderChildren}
