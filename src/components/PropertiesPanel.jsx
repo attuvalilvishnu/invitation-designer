@@ -6,6 +6,16 @@ export default function PropertiesPanel({ selectedElement, updateSelected, delet
       <h3>Properties</h3>
       {selectedElement.type === 'text' && (
         <>
+          <label>Text Content</label>
+          <textarea 
+            value={selectedElement.content} 
+            onChange={e => updateSelected('content', e.target.value)} 
+            style={{ width: '100%', minHeight: '60px', padding: '8px', marginBottom: '10px', fontFamily: 'var(--font-ui)', border: '1px solid var(--border)', borderRadius: '4px', boxSizing: 'border-box' }}
+          />
+
+          <label>Width (px)</label>
+          <input type="number" placeholder="Auto" value={selectedElement.width || ''} onChange={e => updateSelected('width', e.target.value ? Number(e.target.value) : undefined)} style={{ width: '100%', padding: '6px', marginBottom: '10px', boxSizing: 'border-box' }} />
+
           <label>Font Size</label>
           <input type="range" min="10" max="150" value={selectedElement.fontSize || 32} onChange={e => updateSelected('fontSize', Number(e.target.value))} style={{ width: '100%' }} />
           <label>Color</label>

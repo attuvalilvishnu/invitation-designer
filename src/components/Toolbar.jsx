@@ -107,7 +107,25 @@ export default function Toolbar({
 
   return (
     <aside id="toolbar">
-      <h2>Designer</h2>
+      <div style={{ 
+        position: 'sticky', 
+        top: '-20px', 
+        background: 'var(--toolbar-bg)', 
+        paddingTop: '20px',
+        paddingBottom: '15px',
+        marginTop: '-20px',
+        marginLeft: '-20px',
+        marginRight: '-20px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        borderBottom: '1px solid var(--border)',
+        display: 'flex', 
+        gap: '10px', 
+        zIndex: 100 
+      }}>
+        <button onClick={undo} disabled={!canUndo} style={{ flex: 1, padding: '10px', opacity: canUndo ? 1 : 0.5, fontWeight: 'bold', background: '#f8f9fa' }}>↩ Undo</button>
+        <button onClick={redo} disabled={!canRedo} style={{ flex: 1, padding: '10px', opacity: canRedo ? 1 : 0.5, fontWeight: 'bold', background: '#f8f9fa' }}>Redo ↪</button>
+      </div>
 
       {selectedElement && (
         <PropertiesPanel
@@ -117,11 +135,6 @@ export default function Toolbar({
           setSelectedId={setSelectedId}
         />
       )}
-
-      <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-        <button onClick={undo} disabled={!canUndo} style={{ flex: 1, padding: '8px', opacity: canUndo ? 1 : 0.5 }}>↩ Undo</button>
-        <button onClick={redo} disabled={!canRedo} style={{ flex: 1, padding: '8px', opacity: canRedo ? 1 : 0.5 }}>Redo ↪</button>
-      </div>
 
       <div className="tool-section">
         <h3>Project Type</h3>

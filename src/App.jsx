@@ -10,6 +10,7 @@ export default function App() {
   const [past, setPast] = useState([]);
   const [future, setFuture] = useState([]);
   const dragInitialState = useRef(null);
+  const historyTimeoutRef = useRef(null);
 
   const [selectedId, setSelectedId] = useState(null);
   const [numPages, setNumPages] = useState(5);
@@ -52,6 +53,19 @@ export default function App() {
   };
 
   const selectedElement = elements.find(el => el.id === selectedId);
+
+  useEffect(() => {
+    // Migration: Strip hardcoded 500px width from text elements to prevent bounding box collisions natively
+    setElements(els => els.map(el => {
+      if (el.type === 'text' && el.width === 500 && el.x === 0) {
+        // Mathematically center it back visually to retain starter aesthetic despite dropping full-width
+        const estimatedWidth = el.content.length * ((el.fontSize || 32) * 0.45);
+        const centeredX = Math.max(0, (500 - estimatedWidth) / 2);
+        return { ...el, width: undefined, x: centeredX };
+      }
+      return el;
+    }));
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -134,7 +148,7 @@ export default function App() {
     let newEl = { id: generateId(), type, x: spawnX, y: spawnY, zIndex: elements.length + 1, parentId };
 
     if (type === 'text') {
-      newEl = { ...newEl, content: 'text', fontSize: 32, font: 'Outfit', color: 'white', align: 'left', width: 250, height: 40 };
+      newEl = { ...newEl, content: 'text', fontSize: 32, font: 'Outfit', color: 'white', align: 'center', width: 250 };
     } else if (type === 'card') {
       newEl = { ...newEl, x: 0, isGlass: false, bgColor: 'transparent', bgImage: 'none', width: 500, height: 400 };
     } else if (type === 'image') {
@@ -176,8 +190,20 @@ export default function App() {
 
   const updateSelected = (key, value) => {
     if (!selectedId) return;
-    setPast(prev => [...prev, elements]);
-    setFuture([]);
+
+    if (!historyTimeoutRef.current) {
+      setPast(prev => {
+        if (prev.length > 0 && prev[prev.length - 1] === elements) return prev;
+        return [...prev, elements];
+      });
+      setFuture([]);
+    }
+
+    clearTimeout(historyTimeoutRef.current);
+    historyTimeoutRef.current = setTimeout(() => {
+      historyTimeoutRef.current = null;
+    }, 600);
+
     setElements(els => els.map(el => el.id === selectedId ? { ...el, [key]: value } : el));
   };
 

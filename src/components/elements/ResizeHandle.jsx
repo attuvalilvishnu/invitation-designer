@@ -62,7 +62,8 @@ export default function ResizeHandle({ id, width, height, onResize, lockWidth = 
         cursor: lockWidth ? 'ns-resize' : 'nwse-resize',
         border: '2px solid white',
         boxShadow: '0 0 4px rgba(0,0,0,0.3)',
-        zIndex: 10
+        zIndex: 10,
+        pointerEvents: 'auto'
       }}
     />
   );
