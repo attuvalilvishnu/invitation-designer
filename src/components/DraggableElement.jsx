@@ -3,7 +3,7 @@ import TextElement from './elements/TextElement';
 import CardElement from './elements/CardElement';
 import ImageElement from './elements/ImageElement';
 
-export default function DraggableElement({ element, isSelected, onSelect, onDrag, onResize, onInteractStart, onInteractEnd, updateContent, renderChildren }) {
+export default function DraggableElement({ element, isSelected, isParentOfSelected, onSelect, onDrag, onResize, onInteractStart, onInteractEnd, updateContent, renderChildren }) {
   const handlePointerDown = (e) => {
     e.stopPropagation();
     const wasSelected = isSelected;
@@ -14,17 +14,13 @@ export default function DraggableElement({ element, isSelected, onSelect, onDrag
     let hasStartedInteraction = false;
     
     const onPointerMove = (moveEvent) => {
+      // Cards are absolutely restricted from being dragged (allows users to natively swipe-scroll over empty card backgrounds on mobile)
+      if (element.type === 'card') return; 
+
       const isTouch = moveEvent.type.includes('touch');
-      if (isTouch && !wasSelected) {
-        // Crucial usability fix: Don't drag unselected elements on touch (allows scrolling over them)
-        return;
-      }
-
       if (moveEvent.cancelable && isTouch) {
-        moveEvent.preventDefault();
+        moveEvent.preventDefault(); // Only lock scroll if actively dragging text or images
       }
-
-      if (element.type === 'card') return; // Cards are absolutely restricted from being dragged
 
       if (!hasStartedInteraction) {
         hasStartedInteraction = true;
@@ -58,7 +54,7 @@ export default function DraggableElement({ element, isSelected, onSelect, onDrag
   const baseStyle = {
     left: `${element.x}px`,
     top: `${element.y}px`,
-    zIndex: isSelected ? 100 : 1
+    zIndex: isSelected ? 100 : (isParentOfSelected ? 50 : 1)
   };
 
   if (element.type === 'text') {

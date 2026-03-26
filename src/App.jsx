@@ -44,7 +44,7 @@ export default function App() {
   };
 
   const handleInteractEnd = () => {
-    if (dragInitialState.current && dragInitialState.current !== elements) {
+    if (dragInitialState.current) {
       setPast(prev => [...prev, dragInitialState.current]);
       setFuture([]);
       dragInitialState.current = null;
@@ -85,21 +85,56 @@ export default function App() {
   }, [selectedId, elements]);
 
   const addElement = (type, customImageUrl = null) => {
-    const parentId = selectedElement?.type === 'card' ? selectedId : null;
+    let parentId = undefined;
+    let spawnY = 50;
+    let spawnX = 50;
 
-    let dropY = 50;
-    if (!parentId) {
-      const workspace = document.getElementById('workspace');
-      if (workspace) {
-        // Adjust spawn point visually so root elements don't exclusively jump to Page 1
-        dropY = workspace.scrollTop + 50;
+    const workspace = document.getElementById('workspace');
+    if (workspace && canvasRef.current) {
+      const scale = canvasRef.current.getBoundingClientRect().width / canvasRef.current.offsetWidth;
+      // Absolute Y coordinate on the unscaled canvas that corresponds to the center of the scrolling viewport
+      const absoluteCenterY = (workspace.scrollTop + workspace.clientHeight / 2) / scale;
+
+      // Determine parent
+      if (selectedId) {
+        const selected = elements.find(el => el.id === selectedId);
+        if (selected) {
+          parentId = selected.type === 'card' ? selected.id : selected.parentId;
+        }
+      }
+
+      if (!parentId) {
+        const cards = elements.filter(el => !el.parentId && el.type === 'card');
+        let minDistance = Infinity;
+        cards.forEach(card => {
+          const cardCenterY = card.y + (card.height || 700) / 2;
+          const distance = Math.abs(absoluteCenterY - cardCenterY);
+          if (distance < minDistance) {
+            minDistance = distance;
+            parentId = card.id;
+          }
+        });
+      }
+
+      if (parentId) {
+        const parentCard = elements.find(el => el.id === parentId);
+        if (parentCard) {
+          spawnY = absoluteCenterY - parentCard.y - 20;
+          const parentH = parentCard.height || 700;
+          spawnY = Math.max(0, Math.min(spawnY, parentH - 40));
+        }
       }
     }
 
-    let newEl = { id: generateId(), type, x: 50, y: dropY, parentId };
+    if (!parentId) {
+      const fallbackCard = elements.find(el => !el.parentId && el.type === 'card');
+      if (fallbackCard) parentId = fallbackCard.id;
+    }
+
+    let newEl = { id: generateId(), type, x: spawnX, y: spawnY, zIndex: elements.length + 1, parentId };
 
     if (type === 'text') {
-      newEl = { ...newEl, content: 'Text', fontSize: 32, color: '#000000', font: 'Cormorant Garamond' };
+      newEl = { ...newEl, content: 'text', fontSize: 32, font: 'Outfit', color: 'white', align: 'left', width: 250, height: 40 };
     } else if (type === 'card') {
       newEl = { ...newEl, x: 0, isGlass: false, bgColor: 'transparent', bgImage: 'none', width: 500, height: 400 };
     } else if (type === 'image') {
@@ -117,7 +152,26 @@ export default function App() {
     const rect = canvasRef.current.getBoundingClientRect();
     const scale = rect.width / canvasRef.current.offsetWidth;
 
-    setElements(els => els.map(el => el.id === id ? { ...el, x: el.x + dx / scale, y: el.y + dy / scale } : el));
+    setElements(els => els.map(el => {
+      if (el.id !== id) return el;
+
+      let newX = el.x + dx / scale;
+      let newY = el.y + dy / scale;
+
+      // Restrict dragging natively to remain physically inside parent card bounds
+      if (el.parentId) {
+        const parent = els.find(p => p.id === el.parentId);
+        if (parent) {
+          const parentH = parent.height || 700;
+
+          // Removed horizontal bounds to allow full left/right bleeding.
+          // Loosened vertical bounds so it doesn't artificially block placement near the bottom edge.
+          newY = Math.max(0, Math.min(newY, parentH - 20));
+        }
+      }
+
+      return { ...el, x: newX, y: newY };
+    }));
   };
 
   const updateSelected = (key, value) => {
@@ -176,10 +230,11 @@ export default function App() {
         <DraggableElement
           key={el.id}
           element={el}
-          isSelected={selectedId === el.id}
-          onSelect={isPreviewMode ? () => {} : setSelectedId}
-          onDrag={isPreviewMode ? () => {} : handleDrag}
-          onResize={isPreviewMode ? () => {} : handleResize}
+          isSelected={!isPreviewMode && selectedId === el.id}
+          isParentOfSelected={!isPreviewMode && selectedElement && selectedElement.parentId === el.id}
+          onSelect={isPreviewMode ? () => { } : setSelectedId}
+          onDrag={isPreviewMode ? () => { } : handleDrag}
+          onResize={isPreviewMode ? () => { } : handleResize}
           onInteractStart={handleInteractStart}
           onInteractEnd={handleInteractEnd}
           updateContent={updateContent}

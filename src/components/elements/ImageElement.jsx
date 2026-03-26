@@ -8,15 +8,25 @@ export default function ImageElement({ element, isSelected, baseStyle, handleMou
       style={{ 
         ...baseStyle, 
         width: `${element.width}px`, 
-        height: `${element.height}px` 
+        height: `${element.height}px`,
+        touchAction: 'none',
+        backgroundColor: 'rgba(255, 255, 255, 0.01)'
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleMouseDown}
+      onClick={(e) => e.stopPropagation()}
+      onTouchEnd={(e) => e.stopPropagation()}
       data-type="image"
     >
       <img 
         src={element.imageUrl} 
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'cover',
+          borderRadius: typeof element.borderRadius === 'undefined' ? '4px' : `${element.borderRadius}px`,
+          opacity: typeof element.opacity === 'undefined' ? 1 : element.opacity
+        }} 
         draggable="false" 
         alt="Canvas Element"
       />

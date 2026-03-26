@@ -222,7 +222,6 @@ select {
 
 img.canvas-element {
   object-fit: cover;
-  pointer-events: none;
 }
 
 @media (max-width: 768px) {

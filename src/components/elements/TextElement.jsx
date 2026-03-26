@@ -37,6 +37,7 @@ export default function TextElement({ element, isSelected, baseStyle, handleMous
   };
 
   const handleClick = (e) => {
+    e.stopPropagation();
     if (isSelected && !isEditing) {
       setIsEditing(true);
     }
@@ -51,24 +52,32 @@ export default function TextElement({ element, isSelected, baseStyle, handleMous
       className={`canvas-element ${isSelected ? 'selected' : ''}`}
       style={{ 
         ...baseStyle, 
-        ...sizeStyle,
-        fontSize: `${element.fontSize}px`, 
-        color: element.color, 
+        width: element.width ? `${element.width}px` : (isEditing ? '150px' : 'auto'),
+        height: element.height ? `${element.height}px` : (isEditing ? '40px' : 'auto'),
+        fontSize: `${element.fontSize}px`,
+        color: element.color,
         fontFamily: element.font,
-        outline: 'none',
+        textAlign: element.align,
+        fontWeight: element.isBold ? 'bold' : 'normal',
+        fontStyle: element.isItalic ? 'italic' : 'normal',
+        textDecoration: element.isUnderline ? 'underline' : 'none',
+        wordBreak: 'break-word',
+        outline: isEditing ? '2px solid #8a2be2' : 'none',
         minWidth: '20px',
         minHeight: '20px',
         cursor: isEditing ? 'text' : 'grab',
-        overflow: 'hidden',
-        wordBreak: 'break-word',
         userSelect: isEditing ? 'text' : 'none',
-        WebkitUserSelect: isEditing ? 'text' : 'none'
+        WebkitUserSelect: isEditing ? 'text' : 'none',
+        zIndex: isEditing ? 100 : baseStyle.zIndex,
+        touchAction: 'none',
+        backgroundColor: 'rgba(255, 255, 255, 0.01)'
       }}
-      onMouseDown={isEditing ? undefined : handleMouseDown}
-      onTouchStart={isEditing ? undefined : handleMouseDown}
+      onMouseDown={isEditing ? (e) => e.stopPropagation() : handleMouseDown}
+      onTouchStart={isEditing ? (e) => e.stopPropagation() : handleMouseDown}
       onDoubleClick={handleDoubleClick}
       onClick={handleClick}
       onTouchEnd={handleClick}
+      data-type="text"
     >
       <span
         ref={spanRef}
@@ -81,8 +90,7 @@ export default function TextElement({ element, isSelected, baseStyle, handleMous
           display: 'block', 
           width: '100%', 
           height: '100%',
-          cursor: isEditing ? 'text' : 'inherit',
-          pointerEvents: isEditing ? 'auto' : 'none'
+          cursor: isEditing ? 'text' : 'inherit'
         }}
       >
         {element.content}

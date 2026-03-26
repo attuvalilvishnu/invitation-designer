@@ -109,7 +109,16 @@ export default function Toolbar({
     <aside id="toolbar">
       <h2>Designer</h2>
 
-      <div style={{ display: 'flex', gap: '10px' }}>
+      {selectedElement && (
+        <PropertiesPanel
+          selectedElement={selectedElement}
+          updateSelected={updateSelected}
+          deleteSelected={deleteSelected}
+          setSelectedId={setSelectedId}
+        />
+      )}
+
+      <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
         <button onClick={undo} disabled={!canUndo} style={{ flex: 1, padding: '8px', opacity: canUndo ? 1 : 0.5 }}>↩ Undo</button>
         <button onClick={redo} disabled={!canRedo} style={{ flex: 1, padding: '8px', opacity: canRedo ? 1 : 0.5 }}>Redo ↪</button>
       </div>
@@ -145,15 +154,6 @@ export default function Toolbar({
           <input type="file" id="btn-upload-image" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} />
         </label>
       </div>
-
-      {selectedElement && (
-        <PropertiesPanel
-          selectedElement={selectedElement}
-          updateSelected={updateSelected}
-          deleteSelected={deleteSelected}
-          setSelectedId={setSelectedId}
-        />
-      )}
 
       <div className="tool-section">
         <h3>Canvas Settings</h3>
