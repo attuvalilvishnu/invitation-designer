@@ -39,7 +39,9 @@ export default function TextElement({ element, isSelected, baseStyle, handleMous
         minHeight: '20px',
         cursor: isEditing ? 'text' : 'grab',
         overflow: 'hidden',
-        wordBreak: 'break-word'
+        wordBreak: 'break-word',
+        userSelect: isEditing ? 'text' : 'none',
+        WebkitUserSelect: isEditing ? 'text' : 'none'
       }}
       onMouseDown={isEditing ? undefined : handleMouseDown}
       onDoubleClick={handleDoubleClick}
