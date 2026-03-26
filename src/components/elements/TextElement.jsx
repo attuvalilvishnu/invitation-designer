@@ -1,9 +1,24 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import ResizeHandle from './ResizeHandle';
 
 export default function TextElement({ element, isSelected, baseStyle, handleMouseDown, updateContent, onResize }) {
   const contentRef = useRef(element.content);
+  const spanRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (isEditing && spanRef.current) {
+      spanRef.current.focus();
+      if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
+        const range = document.createRange();
+        range.selectNodeContents(spanRef.current);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+  }, [isEditing]);
 
   const handleInput = (e) => {
     contentRef.current = e.currentTarget.textContent;
@@ -19,6 +34,12 @@ export default function TextElement({ element, isSelected, baseStyle, handleMous
   const handleDoubleClick = (e) => {
     e.stopPropagation();
     setIsEditing(true);
+  };
+
+  const handleClick = (e) => {
+    if (isSelected && !isEditing) {
+      setIsEditing(true);
+    }
   };
 
   const sizeStyle = {};
@@ -45,8 +66,11 @@ export default function TextElement({ element, isSelected, baseStyle, handleMous
       }}
       onMouseDown={isEditing ? undefined : handleMouseDown}
       onDoubleClick={handleDoubleClick}
+      onClick={handleClick}
+      onTouchEnd={handleClick}
     >
       <span
+        ref={spanRef}
         contentEditable={isEditing}
         suppressContentEditableWarning={true}
         onInput={handleInput}
