@@ -22,13 +22,15 @@ export default function App() {
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const canvasRef = useRef(null);
 
-  const canvasHeight = elements.filter(el => !el.parentId).reduce((max, el) => Math.max(max, el.y + (el.height || 0)), 0) + 100;
+  const safeElements = Array.isArray(elements) ? elements : [];
+  const canvasHeight = safeElements.filter(el => !el.parentId).reduce((max, el) => Math.max(max, el.y + (el.height || 0)), 0) + 100;
 
   const undo = () => {
     if (past.length === 0) return;
     const previous = past[past.length - 1];
     setPast(past.slice(0, -1));
-    setFuture([elements, ...future]);
+    if (!previous || !Array.isArray(previous)) return;
+    setFuture([safeElements, ...future]);
     setElements(previous);
   };
 
@@ -36,7 +38,8 @@ export default function App() {
     if (future.length === 0) return;
     const next = future[0];
     setFuture(future.slice(1));
-    setPast([...past, elements]);
+    if (!next || !Array.isArray(next)) return;
+    setPast([...past, safeElements]);
     setElements(next);
   };
 
@@ -46,13 +49,14 @@ export default function App() {
 
   const handleInteractEnd = () => {
     if (dragInitialState.current) {
-      setPast(prev => [...prev, dragInitialState.current]);
+      const snapshot = dragInitialState.current;
+      setPast(prev => [...prev, snapshot]);
       setFuture([]);
       dragInitialState.current = null;
     }
   };
 
-  const selectedElement = elements.find(el => el.id === selectedId);
+  const selectedElement = safeElements.find(el => el.id === selectedId);
 
   useEffect(() => {
     // Migration: Strip hardcoded 500px width from text elements to prevent bounding box collisions natively
@@ -250,7 +254,7 @@ export default function App() {
 
   // Recursive render logic
   const renderChildren = (parentId) => {
-    return elements
+    return safeElements
       .filter(el => el.parentId === parentId)
       .map(el => (
         <DraggableElement

@@ -120,11 +120,17 @@ export default function Toolbar({
         paddingRight: '20px',
         borderBottom: '1px solid var(--border)',
         display: 'flex', 
-        gap: '10px', 
+        gap: '6px', 
         zIndex: 100 
       }}>
-        <button onClick={undo} disabled={!canUndo} style={{ flex: 1, padding: '10px', opacity: canUndo ? 1 : 0.5, fontWeight: 'bold', background: '#f8f9fa' }}>↩ Undo</button>
-        <button onClick={redo} disabled={!canRedo} style={{ flex: 1, padding: '10px', opacity: canRedo ? 1 : 0.5, fontWeight: 'bold', background: '#f8f9fa' }}>Redo ↪</button>
+        <button title="Undo" onClick={undo} disabled={!canUndo} style={{ width: '40px', padding: '10px 5px', opacity: canUndo ? 1 : 0.5, fontWeight: 'bold', background: '#f8f9fa', fontSize: '14px', flexShrink: 0 }}>↩</button>
+        <button title="Redo" onClick={redo} disabled={!canRedo} style={{ width: '40px', padding: '10px 5px', opacity: canRedo ? 1 : 0.5, fontWeight: 'bold', background: '#f8f9fa', fontSize: '14px', flexShrink: 0 }}>↪</button>
+        <button title="Preview Design" style={{ flex: 1, padding: '10px 5px', background: '#4a90e2', color: '#fff', borderColor: '#4a90e2', fontSize: '12px', whiteSpace: 'nowrap' }} onClick={() => { setSelectedId(null); setIsPreviewMode(true); }}>🔍 Preview</button>
+        {exportMode === 'png' ? (
+          <button title="Export PNG Pages" className="primary" style={{ flex: 1, padding: '10px 5px', fontSize: '12px', whiteSpace: 'nowrap' }} onClick={handleExportPNG}>⬇ Export</button>
+        ) : (
+          <button title="Export HTML" className="primary" style={{ flex: 1, padding: '10px 5px', background: '#e6b800', color: '#1a1a1a', fontSize: '12px', whiteSpace: 'nowrap' }} onClick={handleExportHTML}>⬇ Export</button>
+        )}
       </div>
 
       {selectedElement && (
@@ -220,18 +226,6 @@ export default function Toolbar({
           <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImportTemplate} />
         </label>
 
-        <hr style={{ margin: '15px 0', border: 'none', borderTop: '1px solid #e2e8f0' }} />
-        <button
-          style={{ background: '#4a90e2', color: '#fff', borderColor: '#4a90e2', width: '100%', marginBottom: '10px' }}
-          onClick={() => { setSelectedId(null); setIsPreviewMode(true); }}
-        >
-          🔍 Preview Design
-        </button>
-        {exportMode === 'png' ? (
-          <button id="btn-export" className="primary" style={{ width: '100%' }} onClick={handleExportPNG}>Export PNG Pages</button>
-        ) : (
-          <button id="btn-export-html" className="primary" style={{ background: '#e6b800', color: '#1a1a1a', width: '100%' }} onClick={handleExportHTML}>Export as HTML</button>
-        )}
       </div>
     </aside>
   );
