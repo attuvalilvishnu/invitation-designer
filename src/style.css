@@ -1,0 +1,248 @@
+:root {
+  --primary: #8a2be2;
+  --primary-hover: #7b22cc;
+  --bg-color: #f4f6f9;
+  --toolbar-bg: #ffffff;
+  --text-color: #333;
+  --border: #e2e8f0;
+  --font-ui: 'Outfit', sans-serif;
+  --font-canvas: 'Cormorant Garamond', serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  background: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+#toolbar {
+  width: 300px;
+  background: var(--toolbar-bg);
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+  z-index: 10;
+}
+
+#toolbar h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.tool-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fafafa;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.tool-section h3 {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #777;
+  letter-spacing: 1px;
+}
+
+button {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+button:hover {
+  background: #f0f0f0;
+  border-color: #ccc;
+}
+
+button.primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+}
+button.primary:hover {
+  background: var(--primary-hover);
+}
+
+.upload-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  text-align: center;
+}
+.upload-btn:hover {
+  background: var(--primary-hover);
+}
+
+.color-preset {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  margin-top: 5px;
+}
+
+input[type="text"], input[type="range"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="text"] {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+}
+
+select {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#workspace {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: auto;
+  padding: 40px;
+  background: repeating-linear-gradient(45deg, #e5e5f7 25%, transparent 25%, transparent 75%, #e5e5f7 75%, #e5e5f7), repeating-linear-gradient(45deg, #e5e5f7 25%, #f4f6f9 25%, #f4f6f9 75%, #e5e5f7 75%, #e5e5f7);
+  background-position: 0 0, 10px 10px;
+  background-size: 20px 20px;
+}
+
+#canvas-container {
+  /* Removed shadow and radius for seamless look */
+}
+
+#canvas {
+  width: 500px;
+  height: 700px;
+  background-color: #ffffff;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  transform-origin: center;
+}
+
+.canvas-element {
+  position: absolute;
+  cursor: grab;
+  user-select: none;
+  font-family: var(--font-canvas);
+  line-height: 1.2;
+  white-space: pre-wrap;
+  min-width: 50px;
+  min-height: 20px;
+  border: 1px dashed transparent;
+}
+
+.canvas-element:active {
+  cursor: grabbing;
+}
+
+.page-divider {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 0;
+  border-top: 2px dashed rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.canvas-element.selected {
+  border-color: var(--primary);
+  outline: 2px dashed rgba(138, 43, 226, 0.5);
+}
+
+.canvas-element.glass {
+  background: rgba(20, 20, 20, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.canvas-element.glass.selected {
+  outline: 2px dashed rgba(212, 175, 55, 0.8);
+}
+
+img.canvas-element {
+  object-fit: cover;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  #app {
+    flex-direction: column-reverse;
+  }
+  
+  #toolbar {
+    width: 100%;
+    height: 45vh;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    box-sizing: border-box;
+  }
+  
+  #workspace {
+    height: 55vh;
+    padding: 20px;
+  }
+  
+  #canvas {
+    transform: scale(0.6);
+  }
+}
