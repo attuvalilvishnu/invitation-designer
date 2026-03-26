@@ -65,6 +65,7 @@ export default function TextElement({ element, isSelected, baseStyle, handleMous
         WebkitUserSelect: isEditing ? 'text' : 'none'
       }}
       onMouseDown={isEditing ? undefined : handleMouseDown}
+      onTouchStart={isEditing ? undefined : handleMouseDown}
       onDoubleClick={handleDoubleClick}
       onClick={handleClick}
       onTouchEnd={handleClick}

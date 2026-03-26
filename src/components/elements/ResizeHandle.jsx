@@ -1,16 +1,23 @@
 import React from 'react';
 
 export default function ResizeHandle({ id, width, height, onResize, lockWidth = false }) {
-  const handleMouseDown = (e) => {
+  const handlePointerDown = (e) => {
     e.stopPropagation();
-    let startX = e.clientX;
-    let startY = e.clientY;
+    let startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    let startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
     let startW = width;
     let startH = height;
 
-    const onMouseMove = (moveEvent) => {
-      const dx = moveEvent.clientX - startX;
-      const dy = moveEvent.clientY - startY;
+    const onPointerMove = (moveEvent) => {
+      if (moveEvent.cancelable && moveEvent.type.includes('touch')) {
+        moveEvent.preventDefault();
+      }
+
+      const clientX = moveEvent.type.includes('touch') ? moveEvent.touches[0].clientX : moveEvent.clientX;
+      const clientY = moveEvent.type.includes('touch') ? moveEvent.touches[0].clientY : moveEvent.clientY;
+
+      const dx = clientX - startX;
+      const dy = clientY - startY;
       const canvas = document.getElementById('canvas');
       const scale = canvas ? canvas.getBoundingClientRect().width / canvas.offsetWidth : 1;
       
@@ -20,18 +27,23 @@ export default function ResizeHandle({ id, width, height, onResize, lockWidth = 
       onResize(id, newWidth, newHeight);
     };
 
-    const onMouseUp = () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+    const onPointerUp = () => {
+      document.removeEventListener('mousemove', onPointerMove);
+      document.removeEventListener('mouseup', onPointerUp);
+      document.removeEventListener('touchmove', onPointerMove);
+      document.removeEventListener('touchend', onPointerUp);
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onPointerMove);
+    document.addEventListener('mouseup', onPointerUp);
+    document.addEventListener('touchmove', onPointerMove, { passive: false });
+    document.addEventListener('touchend', onPointerUp);
   };
 
   return (
     <div
-      onMouseDown={handleMouseDown}
+      onMouseDown={handlePointerDown}
+      onTouchStart={handlePointerDown}
       style={{
         position: 'absolute',
         right: '-6px',

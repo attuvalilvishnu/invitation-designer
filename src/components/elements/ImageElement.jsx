@@ -11,6 +11,7 @@ export default function ImageElement({ element, isSelected, baseStyle, handleMou
         height: `${element.height}px` 
       }}
       onMouseDown={handleMouseDown}
+      onTouchStart={handleMouseDown}
       data-type="image"
     >
       <img 

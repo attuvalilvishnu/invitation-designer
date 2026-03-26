@@ -17,6 +17,7 @@ export default function CardElement({ element, isSelected, baseStyle, handleMous
         display: 'block' // override glass flex which messes up absolute positioning
       }}
       onMouseDown={handleMouseDown}
+      onTouchStart={handleMouseDown}
       data-type="card"
     >
       {renderChildren(element.id)}

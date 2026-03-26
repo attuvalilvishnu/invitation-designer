@@ -4,28 +4,41 @@ import CardElement from './elements/CardElement';
 import ImageElement from './elements/ImageElement';
 
 export default function DraggableElement({ element, isSelected, onSelect, onDrag, onResize, updateContent, renderChildren }) {
-  const handleMouseDown = (e) => {
+  const handlePointerDown = (e) => {
     e.stopPropagation();
     onSelect(element.id);
     
-    let startX = e.clientX;
-    let startY = e.clientY;
+    let startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    let startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
     
-    const onMouseMove = (moveEvent) => {
-      const dx = moveEvent.clientX - startX;
-      const dy = moveEvent.clientY - startY;
+    const onPointerMove = (moveEvent) => {
+      if (element.type === 'card') return; // Cards are not draggable completely
+
+      if (moveEvent.cancelable && moveEvent.type.includes('touch')) {
+        moveEvent.preventDefault();
+      }
+
+      const clientX = moveEvent.type.includes('touch') ? moveEvent.touches[0].clientX : moveEvent.clientX;
+      const clientY = moveEvent.type.includes('touch') ? moveEvent.touches[0].clientY : moveEvent.clientY;
+
+      const dx = clientX - startX;
+      const dy = clientY - startY;
       onDrag(element.id, dx, dy);
-      startX = moveEvent.clientX;
-      startY = moveEvent.clientY;
+      startX = clientX;
+      startY = clientY;
     };
     
-    const onMouseUp = () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+    const onPointerUp = () => {
+      document.removeEventListener('mousemove', onPointerMove);
+      document.removeEventListener('mouseup', onPointerUp);
+      document.removeEventListener('touchmove', onPointerMove);
+      document.removeEventListener('touchend', onPointerUp);
     };
     
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onPointerMove);
+    document.addEventListener('mouseup', onPointerUp);
+    document.addEventListener('touchmove', onPointerMove, { passive: false });
+    document.addEventListener('touchend', onPointerUp);
   };
 
   const baseStyle = {
@@ -35,13 +48,13 @@ export default function DraggableElement({ element, isSelected, onSelect, onDrag
   };
 
   if (element.type === 'text') {
-    return <TextElement element={element} isSelected={isSelected} baseStyle={baseStyle} handleMouseDown={handleMouseDown} updateContent={updateContent} onResize={onResize} />;
+    return <TextElement element={element} isSelected={isSelected} baseStyle={baseStyle} handleMouseDown={handlePointerDown} updateContent={updateContent} onResize={onResize} />;
   }
   if (element.type === 'image') {
-    return <ImageElement element={element} isSelected={isSelected} baseStyle={baseStyle} handleMouseDown={handleMouseDown} onResize={onResize} />;
+    return <ImageElement element={element} isSelected={isSelected} baseStyle={baseStyle} handleMouseDown={handlePointerDown} onResize={onResize} />;
   }
   if (element.type === 'card') {
-    return <CardElement element={element} isSelected={isSelected} baseStyle={baseStyle} handleMouseDown={handleMouseDown} renderChildren={renderChildren} onResize={onResize} />;
+    return <CardElement element={element} isSelected={isSelected} baseStyle={baseStyle} handleMouseDown={handlePointerDown} renderChildren={renderChildren} onResize={onResize} />;
   }
   return null;
 }
