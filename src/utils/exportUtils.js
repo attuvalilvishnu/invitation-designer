@@ -27,11 +27,11 @@ export const exportHTML = (canvasRef) => {
 <html>
 <head>
   <title>Wedding Invitation</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=500, user-scalable=yes">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&family=Lato:wght@300;400;700&family=Dancing+Script:wght@400;600&family=Pacifico&family=Lora:ital,wght@0,400;0,600;1,400&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body { margin: 0; display: flex; justify-content: center; font-family: 'Outfit', sans-serif; overflow-x: hidden; ${bodyBgCSS} }
-    #canvas { transform-origin: top center; overflow: hidden; position: relative; width: 500px; max-width: 100vw; box-shadow: 0 0 50px rgba(0,0,0,0.5); border-radius: 4px; }
+    #canvas { transform-origin: top center; overflow: hidden; position: relative; width: 500px; box-shadow: 0 0 50px rgba(0,0,0,0.5); border-radius: 4px; }
     .page-divider { display: none !important; }
     
     .canvas-element {
@@ -52,9 +52,7 @@ export const exportHTML = (canvasRef) => {
       border-radius: 12px;
       padding: 20px;
       color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
       text-align: center;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
@@ -62,11 +60,6 @@ export const exportHTML = (canvasRef) => {
     img.canvas-element {
       object-fit: cover;
       pointer-events: none;
-    }
-
-    @media (max-width: 500px) {
-      #canvas { transform: scale(calc(100vw / 500)); }
-      body { justify-content: flex-start; }
     }
   </style>
 </head>
