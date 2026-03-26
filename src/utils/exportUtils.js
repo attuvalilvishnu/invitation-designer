@@ -1,4 +1,5 @@
 export const generateId = () => Math.random().toString(36).substr(2, 9);
+import html2canvas from 'html2canvas';
 
 export const exportHTML = (canvasRef) => {
   if (!canvasRef.current) return;
@@ -75,7 +76,45 @@ export const exportHTML = (canvasRef) => {
   a.click();
 };
 
-export const exportPNG = (canvasRef, numPages) => {
-  exportHTML(canvasRef); // Fallback to HTML if html2canvas isn't installed
-  alert("Exported as HTML format as a fallback. For native PNG export, please ensure the html2canvas dependency is set up.");
+export const exportPNG = async (canvasRef, numPages) => {
+  if (!canvasRef.current) return;
+  const canvasElement = canvasRef.current;
+  
+  // Automatically strip UI elements from the canvas natively before taking the picture mathematically
+  const selections = canvasElement.querySelectorAll('.selected');
+  selections.forEach(el => el.classList.remove('selected'));
+  const handles = canvasElement.querySelectorAll('div[style*="absolute"]');
+  const removedHandles = [];
+  handles.forEach(handle => {
+    if (handle.style.right === '-6px') {
+        handle.style.display = 'none'; // strictly visually hide exactly for the screenshot explicitly
+        removedHandles.push(handle);
+    }
+  });
+
+  try {
+    const canvas = await html2canvas(canvasElement, {
+      scale: 3, // Premium retina-ready resolution natively
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      logging: false,
+    });
+    
+    const dataUrl = canvas.toDataURL('image/png');
+    
+    // trigger download
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'invitation-screenshot.png';
+    a.click();
+  } catch (error) {
+    console.error("Error exporting PNG:", error);
+    alert("Failed to export as image natively depending on external CORS blockers. See console. Reverting to HTML fallback...");
+    exportHTML(canvasRef);
+  } finally {
+    // perfectly restore UI state natively regardless of physics
+    selections.forEach(el => el.classList.add('selected'));
+    removedHandles.forEach(handle => handle.style.display = 'block');
+  }
 };

@@ -13,7 +13,7 @@ export default function App() {
   const historyTimeoutRef = useRef(null);
 
   const [selectedId, setSelectedId] = useState(null);
-  const [numPages, setNumPages] = useState(5);
+  const [numPages, setNumPages] = useState(1);
   const [exportMode, setExportMode] = useState('html');
   const [canvasBg, setCanvasBg] = useState('#ffffff');
   const [bgImage, setBgImage] = useState(DEFAULT_BG);
