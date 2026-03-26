@@ -52,7 +52,11 @@ export default function PropertiesPanel({ selectedElement, updateSelected, delet
       {selectedElement.type === 'card' && (
         <>
           <label>Background Color</label>
-          <input type="color" value={selectedElement.bgColor} onChange={e => updateSelected('bgColor', e.target.value)} />
+          <input type="color" value={selectedElement.bgColor || '#ffffff'} onChange={e => updateSelected('bgColor', e.target.value)} style={{ width: '100%', marginBottom: '10px' }} />
+          
+          <label>Card Opacity: {Math.round((typeof selectedElement.opacity === 'undefined' ? 1 : selectedElement.opacity) * 100)}%</label>
+          <input type="range" min="0" max="100" value={(typeof selectedElement.opacity === 'undefined' ? 1 : selectedElement.opacity) * 100} onChange={e => updateSelected('opacity', Number(e.target.value) / 100)} style={{ width: '100%', marginBottom: '10px' }} />
+
           <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
             <input type="checkbox" checked={selectedElement.isGlass} onChange={e => updateSelected('isGlass', e.target.checked)} />
             Glassmorphism Effect

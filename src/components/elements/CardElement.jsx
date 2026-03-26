@@ -9,6 +9,7 @@ export default function CardElement({ element, isSelected, baseStyle, handleMous
         ...baseStyle,
         width: `${element.width}px`,
         height: `${element.height}px`,
+        opacity: typeof element.opacity !== 'undefined' ? element.opacity : 1,
         backgroundColor: element.isGlass ? element.bgColor : (element.bgColor || 'transparent'),
         backgroundImage: element.bgImage && element.bgImage !== 'none' ? `url(${element.bgImage})` : 'none',
         backgroundSize: 'cover',
