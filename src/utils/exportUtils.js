@@ -13,6 +13,16 @@ export const exportHTML = (canvasRef) => {
     }
   });
 
+  const workspace = document.getElementById('workspace');
+  let bodyBgCSS = "background: #f4f6f9;";
+  if (workspace) {
+    const s = workspace.style;
+    bodyBgCSS = `background-color: ${s.backgroundColor || '#f4f6f9'};`;
+    if (s.backgroundImage && s.backgroundImage !== 'none' && s.backgroundImage !== '') {
+       bodyBgCSS += ` background-image: ${s.backgroundImage}; background-size: ${s.backgroundSize || 'cover'}; background-attachment: fixed; background-position: center; background-repeat: no-repeat;`;
+    }
+  }
+
   const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
@@ -20,11 +30,40 @@ export const exportHTML = (canvasRef) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Outfit:wght@300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
   <style>
-    body { margin: 0; display: flex; justify-content: center; background: #1a1a1a; font-family: 'Outfit', sans-serif; overflow-x: hidden; }
-    #canvas { transform-origin: top center; overflow: hidden; position: relative; width: 500px; max-width: 100vw; background-color: #000; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-    .page-divider { display: none; }
-    .glass { background: rgba(20, 20, 20, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; }
-    .canvas-element { position: absolute; box-sizing: border-box; }
+    body { margin: 0; display: flex; justify-content: center; font-family: 'Outfit', sans-serif; overflow-x: hidden; ${bodyBgCSS} }
+    #canvas { transform-origin: top center; overflow: hidden; position: relative; width: 500px; max-width: 100vw; box-shadow: 0 0 50px rgba(0,0,0,0.5); border-radius: 4px; }
+    .page-divider { display: none !important; }
+    
+    .canvas-element {
+      position: absolute;
+      box-sizing: border-box;
+      font-family: 'Cormorant Garamond', serif;
+      line-height: 1.2;
+      white-space: pre-wrap;
+      min-width: 50px;
+      min-height: 20px;
+    }
+    
+    .canvas-element.glass {
+      background: rgba(20, 20, 20, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 20px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    img.canvas-element {
+      object-fit: cover;
+      pointer-events: none;
+    }
+
     @media (max-width: 500px) {
       #canvas { transform: scale(calc(100vw / 500)); }
       body { justify-content: flex-start; }

@@ -24,7 +24,8 @@ export default function Toolbar({
   setBgFit,
   bgWidth,
   setBgWidth,
-  canvasRef
+  canvasRef,
+  setIsPreviewMode
 }) {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -210,6 +211,12 @@ export default function Toolbar({
         </label>
 
         <hr style={{ margin: '15px 0', border: 'none', borderTop: '1px solid #e2e8f0' }} />
+        <button
+          style={{ background: '#4a90e2', color: '#fff', borderColor: '#4a90e2', width: '100%', marginBottom: '10px' }}
+          onClick={() => { setSelectedId(null); setIsPreviewMode(true); }}
+        >
+          🔍 Preview Design
+        </button>
         {exportMode === 'png' ? (
           <button id="btn-export" className="primary" style={{ width: '100%' }} onClick={handleExportPNG}>Export PNG Pages</button>
         ) : (

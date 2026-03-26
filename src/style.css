@@ -246,3 +246,32 @@ img.canvas-element {
     transform: scale(0.6);
   }
 }
+
+.preview-mode .canvas-element {
+  pointer-events: none !important;
+}
+
+.exit-preview-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 12px 24px;
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  font-weight: 600;
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+}
+
+.exit-preview-btn:hover {
+  background: #ff7875;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}

@@ -15,6 +15,7 @@ export default function App() {
   const [bgImage, setBgImage] = useState(DEFAULT_BG);
   const [bgFit, setBgFit] = useState('cover');
   const [bgWidth, setBgWidth] = useState('full');
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
   const canvasRef = useRef(null);
 
   const selectedElement = elements.find(el => el.id === selectedId);
@@ -141,31 +142,43 @@ export default function App() {
   };
 
   return (
-    <div id="app" style={{ display: 'flex', height: '100vh', width: '100vw' }}>
-      <Toolbar
-        addElement={addElement}
-        selectedElement={selectedElement}
-        setSelectedId={setSelectedId}
-        updateSelected={updateSelected}
-        deleteSelected={deleteSelected}
-        clearCanvas={clearCanvas}
-        elements={elements}
-        setElements={setElements}
-        numPages={numPages}
-        setNumPages={setNumPages}
-        exportMode={exportMode}
-        setExportMode={setExportMode}
-        canvasHeight={canvasHeight}
-        setCanvasHeight={setCanvasHeight}
-        canvasBg={canvasBg}
-        setCanvasBg={setCanvasBg}
-        setBgImage={setBgImage}
-        bgFit={bgFit}
-        setBgFit={setBgFit}
-        bgWidth={bgWidth}
-        setBgWidth={setBgWidth}
-        canvasRef={canvasRef}
-      />
+    <div id="app" className={isPreviewMode ? 'preview-mode' : ''} style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+      {!isPreviewMode && (
+        <Toolbar
+          addElement={addElement}
+          selectedElement={selectedElement}
+          setSelectedId={setSelectedId}
+          updateSelected={updateSelected}
+          deleteSelected={deleteSelected}
+          clearCanvas={clearCanvas}
+          elements={elements}
+          setElements={setElements}
+          numPages={numPages}
+          setNumPages={setNumPages}
+          exportMode={exportMode}
+          setExportMode={setExportMode}
+          canvasHeight={canvasHeight}
+          setCanvasHeight={setCanvasHeight}
+          canvasBg={canvasBg}
+          setCanvasBg={setCanvasBg}
+          setBgImage={setBgImage}
+          bgFit={bgFit}
+          setBgFit={setBgFit}
+          bgWidth={bgWidth}
+          setBgWidth={setBgWidth}
+          canvasRef={canvasRef}
+          setIsPreviewMode={setIsPreviewMode}
+        />
+      )}
+
+      {isPreviewMode && (
+        <button
+          onClick={() => setIsPreviewMode(false)}
+          className="exit-preview-btn"
+        >
+          Exit Preview
+        </button>
+      )}
 
       <Canvas
         canvasRef={canvasRef}
