@@ -9,6 +9,46 @@
   --font-canvas: 'Cormorant Garamond', serif;
 }
 
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #555;
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--primary);
+}
+
+.icon-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.icon-btn.danger {
+  color: #d35400;
+}
+
+.icon-btn.danger:hover {
+  background: rgba(211, 84, 0, 0.1);
+  color: #e67e22;
+}
+
+.icon-btn i {
+  pointer-events: none;
+}
+
 body {
   margin: 0;
   font-family: var(--font-ui);
@@ -277,6 +317,7 @@ img.canvas-element {
     bottom: 0;
     width: 100% !important;
     height: 100% !important;
+    overflow: hidden !important;
   }
 
   #canvas.canvas-fullwidth {
@@ -284,6 +325,7 @@ img.canvas-element {
     height: 100% !important;
     transform: none !important;
     transform-origin: top left;
+    overflow: hidden !important;
   }
 }
 

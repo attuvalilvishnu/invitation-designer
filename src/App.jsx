@@ -91,6 +91,7 @@ export default function App() {
       setBgImage('none');
       setCanvasBg('#762c14');
       setCanvasIsGlass(false);
+      setNumPages(1);
     } else {
       // Restore HTML mode defaults
       setBgImage(DEFAULT_BG);
@@ -293,19 +294,21 @@ export default function App() {
   // Recursive render logic
   const renderChildren = (parentId) => {
     if (exportMode === 'png') {
-      // In PNG mode: skip cards, render their children at absolute positions
+      // In PNG mode: skip cards, only render first card's children centered on page
       if (parentId === null) {
-        // Render root non-card elements directly
+        // Root non-card elements
         const rootElements = safeElements.filter(el => !el.parentId && el.type !== 'card');
-        // Also render children of cards as if they are root elements with offset positions
-        const cardChildren = safeElements.filter(el => {
-          if (!el.parentId) return false;
-          const parent = safeElements.find(p => p.id === el.parentId);
-          return parent && parent.type === 'card';
-        }).map(el => {
-          const parent = safeElements.find(p => p.id === el.parentId);
-          return { ...el, x: el.x + (parent?.x || 0), y: el.y + (parent?.y || 0), _flatParentId: el.parentId };
-        });
+        
+        // Only render children of the FIRST card (single page)
+        const firstCard = safeElements.find(el => !el.parentId && el.type === 'card');
+        const cardChildren = firstCard 
+          ? safeElements.filter(el => el.parentId === firstCard.id).map(el => ({
+              ...el, 
+              x: el.x,
+              y: el.y
+            }))
+          : [];
+        
         return [...rootElements, ...cardChildren].map(el => (
           <DraggableElement
             key={el.id}

@@ -49,30 +49,6 @@ export const STARTER_TEMPLATE = [
     "parentId": "cover-card"
   },
   {
-    "id": "cover-date",
-    "type": "text",
-    "content": "20 MAY 2026",
-    "x": 0,
-    "y": 500,
-    "fontSize": 20,
-    "color": "#ffffff",
-    "font": "Outfit",
-    "width": 500,
-    "parentId": "cover-card"
-  },
-  {
-    "id": "cover-loc",
-    "type": "text",
-    "content": "CALICUT",
-    "x": 0,
-    "y": 540,
-    "fontSize": 16,
-    "color": "#d4af37",
-    "font": "Outfit",
-    "width": 500,
-    "parentId": "cover-card"
-  },
-  {
     "id": "invite-card",
     "type": "card",
     "x": 0,

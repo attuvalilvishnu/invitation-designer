@@ -38,6 +38,7 @@ export default function Toolbar({
   canUndo,
   canRedo
 }) {
+  const importTemplateRef = React.useRef(null);
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -73,11 +74,7 @@ export default function Toolbar({
     exportHTML(canvasRef);
   };
 
-  const loadStarterTemplate = () => {
-    if (window.confirm("This will replace all your current design elements with the starter template. Continue?")) {
-      window.location.reload();
-    }
-  };
+
 
   // ── Template Export/Import ──
   const handleExportTemplate = () => {
@@ -132,14 +129,47 @@ export default function Toolbar({
         gap: '6px', 
         zIndex: 100 
       }}>
-        <button title="Undo" onClick={undo} disabled={!canUndo} style={{ width: '40px', padding: '10px 5px', opacity: canUndo ? 1 : 0.5, fontWeight: 'bold', background: '#f8f9fa', fontSize: '14px', flexShrink: 0 }}>↩</button>
-        <button title="Redo" onClick={redo} disabled={!canRedo} style={{ width: '40px', padding: '10px 5px', opacity: canRedo ? 1 : 0.5, fontWeight: 'bold', background: '#f8f9fa', fontSize: '14px', flexShrink: 0 }}>↪</button>
-        <button title="Preview Design" style={{ flex: 1, padding: '10px 5px', background: '#4a90e2', color: '#fff', borderColor: '#4a90e2', fontSize: '12px', whiteSpace: 'nowrap' }} onClick={() => { setSelectedId(null); setIsPreviewMode(true); }}>🔍 Preview</button>
-        {exportMode === 'png' ? (
-          <button title="Export PNG Pages" className="primary" style={{ flex: 1, padding: '10px 5px', fontSize: '12px', whiteSpace: 'nowrap' }} onClick={handleExportPNG}>⬇ Export</button>
-        ) : (
-          <button title="Export HTML" className="primary" style={{ flex: 1, padding: '10px 5px', background: '#e6b800', color: '#1a1a1a', fontSize: '12px', whiteSpace: 'nowrap' }} onClick={handleExportHTML}>⬇ Export</button>
+        <button title="Undo" onClick={undo} disabled={!canUndo} className="icon-btn">
+          <i className="fa-solid fa-rotate-left"></i>
+        </button>
+        <button title="Redo" onClick={redo} disabled={!canRedo} className="icon-btn">
+          <i className="fa-solid fa-rotate-right"></i>
+        </button>
+        
+        {exportMode === 'html' && (
+          <>
+            <div style={{ width: '1px', height: '20px', background: 'var(--border)', margin: '0 4px' }}></div>
+            <button title="Export Template (JSON)" className="icon-btn" onClick={handleExportTemplate}>
+              <i className="fa-solid fa-file-export"></i>
+            </button>
+            <button title="Import Template (JSON)" className="icon-btn" onClick={() => importTemplateRef.current?.click()}>
+              <i className="fa-solid fa-file-import"></i>
+              <input type="file" accept=".json" style={{ display: 'none' }} ref={importTemplateRef} onChange={handleImportTemplate} />
+            </button>
+          </>
         )}
+        
+        <div style={{ width: '1px', height: '20px', background: 'var(--border)', margin: '0 4px' }}></div>
+
+        {exportMode !== 'png' && (
+          <button title="Preview Design" className="icon-btn" onClick={() => { setSelectedId(null); setIsPreviewMode(true); }}>
+            <i className="fa-solid fa-magnifying-glass"></i>
+          </button>
+        )}
+
+        {exportMode === 'png' ? (
+          <button title="Download PNG" className="icon-btn" onClick={handleExportPNG}>
+            <i className="fa-solid fa-download"></i>
+          </button>
+        ) : (
+          <button title="Download HTML" className="icon-btn" onClick={handleExportHTML}>
+            <i className="fa-solid fa-file-code"></i>
+          </button>
+        )}
+
+        <button title="Clear Content" className="icon-btn danger" onClick={clearCanvas}>
+          <i className="fa-solid fa-trash-can"></i>
+        </button>
       </div>
 
       {selectedElement && (
@@ -158,15 +188,7 @@ export default function Toolbar({
           <option value="png">Multi-Page Invitation (PNG)</option>
         </select>
 
-        {exportMode === 'png' ? (
-          <>
-            <label>Total Pages:</label>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '5px', marginTop: '5px' }}>
-              <button style={{ flex: 1, padding: '5px' }} onClick={() => setNumPages(Math.max(1, numPages - 1))}>- Decrease</button>
-              <button style={{ flex: 1, padding: '5px', background: '#8a2be2', color: 'white', borderColor: '#8a2be2' }} onClick={() => setNumPages(numPages + 1)}>+ Add Page</button>
-            </div>
-          </>
-        ) : null}
+        {exportMode === 'png' ? null : null}
       </div>
 
       <div className="tool-section">
@@ -185,28 +207,6 @@ export default function Toolbar({
         </label>
       </div>
 
-      <div className="tool-section">
-        <button id="btn-clear" style={{ background: '#ff4d4f', color: '#fff', borderColor: '#ff4d4f', width: '100%' }} onClick={clearCanvas}>Clear Canvas</button>
-        <button id="btn-reset-template" style={{ background: '#555', color: '#fff', borderColor: '#555', width: '100%', marginTop: '10px' }} onClick={loadStarterTemplate}>Load Starter Template</button>
-
-        <hr style={{ margin: '15px 0', border: 'none', borderTop: '1px solid #e2e8f0' }} />
-
-        <h3>Template</h3>
-        <button
-          style={{ background: '#2d7d46', color: '#fff', borderColor: '#2d7d46', width: '100%' }}
-          onClick={handleExportTemplate}
-        >
-          ⬇ Export Template (JSON)
-        </button>
-        <label
-          className="upload-btn"
-          style={{ display: 'block', marginTop: '10px', background: '#1a6fb5', cursor: 'pointer' }}
-        >
-          ⬆ Import Template (JSON)
-          <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImportTemplate} />
-        </label>
-
-      </div>
     </aside>
   );
 }

@@ -76,16 +76,22 @@ export default function Canvas({
           }}
         >
           {dividers}
-          {exportMode === 'png' ? (
-            <div style={{ 
-              width: '500px', 
-              height: '100%', 
-              position: 'relative', 
-              margin: '0 auto' 
-            }}>
-              {renderChildren(null)}
-            </div>
-          ) : (
+          {exportMode === 'png' ? (() => {
+            const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+            const scale = isMobile ? Math.min(1, window.innerWidth / 500) : 1;
+            return (
+              <div style={{ 
+                width: '500px', 
+                height: `${100 / scale}%`, 
+                position: 'relative', 
+                margin: '0 auto',
+                transform: scale < 1 ? `scale(${scale})` : 'none',
+                transformOrigin: 'top center'
+              }}>
+                {renderChildren(null)}
+              </div>
+            );
+          })() : (
             renderChildren(null)
           )}
         </div>
