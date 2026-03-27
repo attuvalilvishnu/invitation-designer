@@ -36,9 +36,9 @@ export default function Canvas({
   const bgStyle = {
     backgroundColor: canvasBg,
     backgroundImage: enhancedBgImage,
-    backgroundAttachment: 'fixed',
+    backgroundAttachment: 'scroll',
     backgroundSize: bgFit,
-    backgroundPosition: 'center',
+    backgroundPosition: 'top center',
     backgroundRepeat: 'no-repeat'
   };
 
@@ -80,7 +80,7 @@ export default function Canvas({
             const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
             const scale = isMobile ? Math.min(1, window.innerWidth / 500) : 1;
             return (
-              <div style={{ 
+              <div id="png-export-layer" style={{ 
                 width: '500px', 
                 height: `${100 / scale}%`, 
                 position: 'relative', 

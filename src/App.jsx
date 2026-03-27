@@ -88,14 +88,18 @@ export default function App() {
   }, []);
   useEffect(() => {
     if (exportMode === 'png') {
-      setBgImage('none');
-      setCanvasBg('#762c14');
-      setCanvasIsGlass(false);
+      if (bgImage === 'none' || bgImage === DEFAULT_BG) {
+        setBgImage('none');
+        setCanvasBg('#762c14');
+        setCanvasIsGlass(false);
+      }
       setNumPages(1);
     } else {
-      // Restore HTML mode defaults
-      setBgImage(DEFAULT_BG);
-      setCanvasBg('#ffffff');
+      // Restore HTML mode defaults if currently the PNG default
+      if (bgImage === 'none' && canvasBg === '#762c14') {
+        setBgImage(DEFAULT_BG);
+        setCanvasBg('#ffffff');
+      }
     }
   }, [exportMode]);
   useEffect(() => {

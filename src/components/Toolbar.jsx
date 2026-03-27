@@ -201,7 +201,8 @@ export default function Toolbar({
           <button id="btn-add-card" onClick={() => addElement('card')}>Add Container Card</button>
         )}
         <button id="btn-add-image" onClick={handleAddImageByUrl}>Add Image by URL</button>
-        <label className="upload-btn" style={{ display: 'block', marginTop: '10px' }}>
+        <label className="upload-btn" style={{ display: 'block', marginTop: '10px', textAlign: 'center' }}>
+          <i className="fa-solid fa-cloud-arrow-up" style={{ marginRight: '8px' }}></i>
           Upload Image
           <input type="file" id="btn-upload-image" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} />
         </label>

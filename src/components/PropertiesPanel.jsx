@@ -55,7 +55,7 @@ export default function PropertiesPanel({ selectedElement, updateSelected, delet
           <input type="color" value={selectedElement.bgColor || '#ffffff'} onChange={e => updateSelected('bgColor', e.target.value)} style={{ width: '100%', marginBottom: '10px' }} />
 
           <label>Background Image</label>
-          <label className="upload-btn" style={{ display: 'block', marginBottom: '5px', fontSize: '12px', padding: '6px', textAlign: 'center', cursor: 'pointer', background: '#f0f0f0', border: '1px solid #ccc', borderRadius: '4px' }}>
+          <label className="upload-btn" style={{ display: 'block', marginBottom: '10px', textAlign: 'center' }}>
             Upload Custom Image
             <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
               const file = e.target.files[0];

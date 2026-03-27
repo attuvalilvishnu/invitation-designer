@@ -357,3 +357,33 @@ img.canvas-element {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0,0,0,0.4);
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   HIGH QUALITY EXPORT (Method A: The "Fast Flicker")
+   ────────────────────────────────────────────────────────────────────────── */
+body.export-active {
+  overflow: visible !important;
+}
+
+body.export-active #canvas {
+  transform: none !important;
+  width: 500px !important;
+  height: auto !important;
+  min-height: 700px !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 99999 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body.export-active #canvas-container {
+  width: 500px !important;
+  overflow: visible !important;
+}
+
+body.export-active #png-export-layer {
+  transform: none !important;
+  width: 500px !important;
+}

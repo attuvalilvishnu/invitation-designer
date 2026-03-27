@@ -92,9 +92,16 @@ export const exportPNG = async (canvasRef, numPages) => {
     }
   });
 
+  // Apply "Fast Flicker" high-quality mode: 
+  // Temporarily unscale the live DOM to 1:1 so html2canvas sees full-size pixels. 
+  document.body.classList.add('export-active');
+
   try {
+    // Wait for the browser to recalculate the layout at 1:1 scale
+    await new Promise(resolve => setTimeout(resolve, 50));
+
     const canvas = await html2canvas(canvasElement, {
-      scale: 3, // Premium retina-ready resolution natively
+      scale: 4, // High-quality 4x resolution
       useCORS: true,
       allowTaint: true,
       backgroundColor: null,
@@ -110,10 +117,11 @@ export const exportPNG = async (canvasRef, numPages) => {
     a.click();
   } catch (error) {
     console.error("Error exporting PNG:", error);
-    alert("Failed to export as image natively depending on external CORS blockers. See console. Reverting to HTML fallback...");
+    alert("Failed to export as image natively. Reverting to HTML fallback...");
     exportHTML(canvasRef);
   } finally {
-    // perfectly restore UI state natively regardless of physics
+    // Restore mobile layout immediately
+    document.body.classList.remove('export-active');
     selections.forEach(el => el.classList.add('selected'));
     removedHandles.forEach(handle => handle.style.display = 'block');
   }
